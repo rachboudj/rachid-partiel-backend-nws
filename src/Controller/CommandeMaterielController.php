@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Commande;
+use App\Entity\Materiel;
 use App\Entity\CommandeMateriel;
 use App\Form\CommandeMaterielType;
 use App\Repository\CommandeMaterielRepository;
@@ -37,6 +38,9 @@ class CommandeMaterielController extends AbstractController
         $form = $this->createForm(CommandeMaterielType::class, $commandeMateriel);
         $form->handleRequest($request);
 
+        $materielsDisponibles = $entityManager->getRepository(Materiel::class)->findAll();
+
+
         if ($form->isSubmitted() && $form->isValid()) {
             $materiel = $commandeMateriel->getMateriel();
             $quantite = $commandeMateriel->getQuantite();
@@ -66,6 +70,7 @@ class CommandeMaterielController extends AbstractController
         return $this->render('commande_materiel/new.html.twig', [
             'commande_materiel' => $commandeMateriel,
             'form' => $form,
+            'materiels_disponibles' => $materielsDisponibles,
         ]);
     }
 
