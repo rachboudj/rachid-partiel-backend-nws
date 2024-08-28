@@ -33,7 +33,9 @@ class CommandeController extends AbstractController
             $entityManager->persist($commande);
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_commande_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_commande_materiel_new', [
+                'commandeId' => $commande->getId(),
+            ], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('commande/new.html.twig', [

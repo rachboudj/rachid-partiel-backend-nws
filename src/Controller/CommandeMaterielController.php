@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Commande;
 use App\Entity\CommandeMateriel;
 use App\Form\CommandeMaterielType;
 use App\Repository\CommandeMaterielRepository;
@@ -22,24 +23,60 @@ class CommandeMaterielController extends AbstractController
         ]);
     }
 
-    #[Route('/new', name: 'app_commande_materiel_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    #[Route('/commande/{commandeId}/ajouter-materiel', name: 'app_commande_materiel_new', methods: ['GET', 'POST'])]
+    public function new(int $commandeId, Request $request, EntityManagerInterface $entityManager): Response
     {
+        $commande = $entityManager->getRepository(Commande::class)->find($commandeId);
+        if (!$commande) {
+            throw $this->createNotFoundException('Commande non trouvée.');
+        }
+
         $commandeMateriel = new CommandeMateriel();
+        $commandeMateriel->setCommande($commande);
+
         $form = $this->createForm(CommandeMaterielType::class, $commandeMateriel);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $materiel = $commandeMateriel->getMateriel();
+            $quantite = $commandeMateriel->getQuantite();
+
+            if ($materiel->getQuantite() < $quantite) {
+                $this->addFlash('error', 'Quantité demandée dépasse le stock disponible.');
+                return $this->render('commande_materiel/new.html.twig', [
+                    'commande_materiel' => $commandeMateriel,
+                    'form' => $form,
+                ]);
+            }
+
+            $commande->addCommandeMateriel($commandeMateriel);
+            $materiel->setQuantite($materiel->getQuantite() - $quantite);
+            $entityManager->persist($materiel);
+
+            $this->recalculerPrixTotal($commande);
+
             $entityManager->persist($commandeMateriel);
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_commande_materiel_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_commande_index', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('commande_materiel/new.html.twig', [
             'commande_materiel' => $commandeMateriel,
             'form' => $form,
         ]);
+    }
+
+    private function recalculerPrixTotal(Commande $commande): void
+    {
+        $total = 0;
+
+        foreach ($commande->getCommandeMateriels() as $commandeMateriel) {
+            $materiel = $commandeMateriel->getMateriel();
+            $total += $materiel->getPrixLocation() * $commandeMateriel->getQuantite();
+        }
+
+        $commande->setTotalPrix($total);
     }
 
     #[Route('/{id}', name: 'app_commande_materiel_show', methods: ['GET'])]

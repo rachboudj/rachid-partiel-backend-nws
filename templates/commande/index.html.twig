@@ -19,7 +19,7 @@
             <tr>
                 <td>{{ commande.id }}</td>
                 <td>{{ commande.nomClient }}</td>
-                <td>{{ commande.totalPrix }}</td>
+                <td>{{ commande.totalPrix }} €</td>
                 <td>
                     <a href="{{ path('app_commande_show', {'id': commande.id}) }}">show</a>
                     <a href="{{ path('app_commande_edit', {'id': commande.id}) }}">edit</a>

@@ -18,11 +18,11 @@ class CommandeMaterielType extends AbstractType
             ->add('quantite')
             ->add('commande', EntityType::class, [
                 'class' => Commande::class,
-                'choice_label' => 'id',
+                'choice_label' => 'nomClient',
             ])
             ->add('materiel', EntityType::class, [
                 'class' => Materiel::class,
-                'choice_label' => 'id',
+                'choice_label' => 'nom',
             ])
         ;
     }
