@@ -23,6 +23,10 @@
                 <td>
                     <a href="{{ path('app_commande_show', {'id': commande.id}) }}">show</a>
                     <a href="{{ path('app_commande_edit', {'id': commande.id}) }}">edit</a>
+                    <form action="{{ path('app_commande_delete', {'id': commande.id}) }}" method="post" style="display:inline;">
+                        <input type="hidden" name="_method" value="POST">
+                        <button class="btn btn-danger">Delete</button>
+                    </form>
                 </td>
             </tr>
         {% else %}
