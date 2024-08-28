@@ -9,6 +9,10 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
+use Symfony\Component\Form\FormError;
+
 
 class CommandeMaterielType extends AbstractType
 {
@@ -25,6 +29,19 @@ class CommandeMaterielType extends AbstractType
                 'choice_label' => 'nom',
             ])
         ;
+
+        $builder->addEventListener(FormEvents::POST_SUBMIT, function (FormEvent $event) {
+            $form = $event->getForm();
+            $data = $form->getData();
+            $materiel = $data->getMateriel();
+
+            if ($materiel && $data->getQuantite() > $materiel->getQuantite()) {
+                $form->get('quantite')->addError(new FormError(
+                    sprintf('La quantité demandée (%d) dépasse la quantité disponible (%d).', 
+                    $data->getQuantite(), $materiel->getQuantite())
+                ));
+            }
+        });
     }
 
     public function configureOptions(OptionsResolver $resolver): void
