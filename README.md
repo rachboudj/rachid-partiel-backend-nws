@@ -15,3 +15,6 @@ Partiel réalisé pour la NWS.
    ```bash
    composer install
 
+3. **Base de donnée**
+
+La base de donnée est sur un serveur. J'ai laissé mes accès dans le .env que j'ai volontairement pas mis dans le .gitignore pour que ce soit plus simple.
