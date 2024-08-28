@@ -6,6 +6,7 @@ use App\Entity\Commande;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 
 class CommandeType extends AbstractType
 {
@@ -13,7 +14,9 @@ class CommandeType extends AbstractType
     {
         $builder
             ->add('nomClient')
-            ->add('totalPrix')
+            ->add('totalPrix', HiddenType::class, [
+                'data' => '0.00',
+            ]);
         ;
     }
 
