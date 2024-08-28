@@ -1,0 +1,41 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Commande index{% endblock %}
+
+{% block body %}
+    <h1>Commande index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>NomClient</th>
+                <th>TotalPrix</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for commande in commandes %}
+            <tr>
+                <td>{{ commande.id }}</td>
+                <td>{{ commande.nomClient }}</td>
+                <td>{{ commande.totalPrix }} €</td>
+                <td>
+                    <a href="{{ path('app_commande_show', {'id': commande.id}) }}">show</a>
+                    <a href="{{ path('app_commande_edit', {'id': commande.id}) }}">edit</a>
+                    <form action="{{ path('app_commande_delete', {'id': commande.id}) }}" method="post" style="display:inline;">
+                        <input type="hidden" name="_method" value="POST">
+                        <button class="btn btn-danger">Delete</button>
+                    </form>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="4">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_commande_new') }}">Create new</a>
+{% endblock %}
